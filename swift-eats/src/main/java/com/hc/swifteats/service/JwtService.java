@@ -49,14 +49,9 @@ public class JwtService {
                 .signWith(getsecretKey())
                 .compact();
     }
-    public boolean isTokenValid(String token) {
-        try {
-            Claims claims = extractClaims(token);
-            return claims.getSubject() != null && !isTokenExpired(token);
-        } catch (JwtException e) {
-            log.error("Invalid JWT token: {}", e.getMessage());
-            return false;
-        }
+    public boolean validateToken(String token, org.springframework.security.core.userdetails.UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
     public boolean isTokenExpired(String token) {
@@ -72,5 +67,13 @@ public class JwtService {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+    }
+
+    public String extractUsername(String token) {
+        return extractClaims(token).getSubject();
+    }
+
+    public String extractRole(String token) {
+        return extractClaims(token).get("role").toString();
     }
 }
