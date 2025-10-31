@@ -1,0 +1,72 @@
+version: "3.9"
+
+# ============================================
+# VOLUMES (Maven cache for faster rebuilds)
+# ============================================
+volumes:
+  maven-repo:
+    driver: local
+  swift_postgres_data:
+    driver: local
+
+
+# ============================================
+# NETWORKS
+# ============================================
+networks:
+  swift-network:
+    driver: bridge
+
+services:
+  # ============================================
+  # DATABASES
+  # ============================================
+  swift-db:
+    image: postgres:latest
+    container_name: swift-service-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: swiftdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - swift_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - swift-network
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+  # ============================================
+  # Application
+  # ============================================
+  swift-eats:
+    build:
+      context: ./swift-eats
+      dockerfile: Dockerfile
+      network: host
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+    container_name: swift-eats
+    restart: always
+    depends_on:
+      - swift-db
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://swift-db:5432/swiftdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    ports:
+      - "8000:8000"
+    networks:
+      - swift-network
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
