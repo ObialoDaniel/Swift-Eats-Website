@@ -62,6 +62,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://swift-db:5432/swiftdb
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: 86400000
+      JWT_REFRESH_EXPIRATION: 604800000
     ports:
       - "8000:8000"
     networks:
