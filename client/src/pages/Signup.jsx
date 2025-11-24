@@ -1,6 +1,7 @@
 import '../styles/auth.css';
 import signupImage from '../assets/signup.jpg';
 import React, { useState } from 'react';
+import Signin from './Signin.jsx';
 export default function SignUp() {
   const [formData, setFormData] = useState({
     firstName: '',
@@ -8,6 +9,7 @@ export default function SignUp() {
     email: '',
     password: ''
   });
+  const [showSignin, setShowSignin] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -18,18 +20,23 @@ export default function SignUp() {
 
   const handleSubmit = () => {
     console.log('Form submitted:', formData);
+    setShowSignin(true);
   };
 
   const handleGoogleSignIn = () => {
     console.log('Google sign in clicked');
   };
- 
+
+
+  if (showSignin) {
+   return <Signin onSignUpClick={() => setShowSignin(false)} />;
+  } 
  
   return (
     <div className="signup-container">
       <div className="signup-card">
         {/* Left side - Image */}
-        <div class="image-section">
+        <div className="image-section">
           <img
             src={signupImage}
             alt="Person with bicycle"
@@ -126,7 +133,7 @@ export default function SignUp() {
 
           <div className="login-link">
             Already have an account?{' '}
-            <button className="login-button">Login</button>
+            <button className="login-button" onClick={() => setShowSignin(true)}>Login</button>
           </div>
         </div>
       </div>
