@@ -19,6 +19,7 @@ public class AppConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/**")
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF protection for stateless APIs
