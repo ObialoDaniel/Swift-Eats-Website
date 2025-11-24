@@ -1,3 +1,10 @@
+/* --- GLOBAL RESET --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
 .signup-container {
   min-height: 100vh;
   display: flex;
@@ -90,6 +97,7 @@
   padding: 14px;
   background-color: #ff6b35;
   color: white;
+  padding: 14px;
   border: none;
   border-radius: 6px;
   font-size: 14px;
