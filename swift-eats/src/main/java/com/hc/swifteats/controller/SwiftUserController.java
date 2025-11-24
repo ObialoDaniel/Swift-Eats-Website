@@ -10,15 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@RestController("api/users")
+@RestController
+@RequestMapping("api/users")
 @RequiredArgsConstructor
 @Slf4j
 @CrossOrigin
@@ -36,7 +34,7 @@ public class SwiftUserController {
     }
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        Map<String,Object> result = new HashMap<>();
+        Map<String,Object> result;
         try {
             log.info("login request: {}", request);
             result = swiftUserService.authenticate(request);
