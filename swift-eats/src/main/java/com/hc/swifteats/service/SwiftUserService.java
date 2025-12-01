@@ -30,7 +30,7 @@ public class SwiftUserService {
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         Users users = Users.builder()
                 .role(Roles.USER)
-                .phone(user.getPhone())
+                .phone(user.getPhoneNumber())
                 .lastName(user.getLastName())
                 .firstName(user.getFirstName())
                 .email(user.getEmail())
