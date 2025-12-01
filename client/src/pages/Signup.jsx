@@ -201,7 +201,6 @@ export default function SignUp() {
               />
             </div>
 
-<<<<<<< HEAD
             <div className="input-group">
               <input
                 type="text"
@@ -223,20 +222,12 @@ export default function SignUp() {
               />
             </div>
 
-            <button onClick={handleSubmit} className="submit-button">
-              GET STARTED
-=======
-            <button 
+             <button 
               onClick={handleSubmit} 
               className="submit-button"
               disabled={loading}
-              style={{
-                opacity: loading ? 0.6 : 1,
-                cursor: loading ? 'not-allowed' : 'pointer'
-              }}
             >
               {loading ? 'CREATING ACCOUNT...' : 'GET STARTED'}
->>>>>>> f20869e11e705758f8190b40a74535a54eb3b821
             </button>
           </div>
 
