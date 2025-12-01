@@ -65,7 +65,7 @@ services:
       JWT_EXPIRATION: 86400000
       JWT_REFRESH_EXPIRATION: 604800000
     ports:
-      - "8000:8000"
+      - "8000:8080"
     networks:
       - swift-network
     dns:
