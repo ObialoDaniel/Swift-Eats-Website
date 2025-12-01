@@ -7,7 +7,9 @@ export default function SignUp() {
     firstName: '',
     lastName: '',
     email: '',
-    password: ''
+    password: '',
+    phoneNumber:'',
+    address:''
   });
 
   const [showSignin, setShowSignin] = useState(false);
@@ -199,6 +201,31 @@ export default function SignUp() {
               />
             </div>
 
+<<<<<<< HEAD
+            <div className="input-group">
+              <input
+                type="text"
+                name="phoneNumber"
+                placeholder="Phone Number"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                className="form-input"
+              />
+            </div>
+              <div className="input-group">
+              <input
+                type="text"
+                name="address"
+                placeholder="Address"
+                value={formData.address}
+                onChange={handleChange}
+                className="form-input"
+              />
+            </div>
+
+            <button onClick={handleSubmit} className="submit-button">
+              GET STARTED
+=======
             <button 
               onClick={handleSubmit} 
               className="submit-button"
@@ -209,6 +236,7 @@ export default function SignUp() {
               }}
             >
               {loading ? 'CREATING ACCOUNT...' : 'GET STARTED'}
+>>>>>>> f20869e11e705758f8190b40a74535a54eb3b821
             </button>
           </div>
 
