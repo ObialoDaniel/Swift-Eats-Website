@@ -2,18 +2,19 @@ import '../styles/auth.css';
 import signupImage from '../assets/signup.jpg';
 import React, { useState } from 'react';
 import Signin from './Signin.jsx';
+
 export default function SignUp() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     password: '',
-    phoneNumber:'',
-    address:''
+    phoneNumber: '',
+    address: ''
   });
 
   const [showSignin, setShowSignin] = useState(false);
-  const [loaidng, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // Fixed typo: "loaidng" → "loading"
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -33,30 +34,35 @@ export default function SignUp() {
     }
     if (!formData.lastName.trim()) {
       setError('Last name is required');
+      return false; // Added missing return
     }
     if (!formData.email.trim()) {
       setError('Email is required');
+      return false; // Added missing return
     }
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    // Moved email validation inside the function
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       setError('Please enter a valid email address');
       return false;
     }
+    
     if (!formData.password) {
       setError('Password is required');
       return false;
     }
+    
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters long');
       return false;
     }
+    
     return true;
   };
 
   const handleSubmit = async () => {
-    //Validate form
+    // Validate form
     if (!validateForm()) {
       return;
     }
@@ -75,20 +81,25 @@ export default function SignUp() {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
-          password: formData.password
+          password: formData.password,
+          phoneNumber: formData.phoneNumber,
+          address: formData.address
         })
       });
+      
       const data = await response.json();
 
       if (!response.ok) {
-        //Handle error
+        // Handle error
         throw new Error(data.message || 'Failed to create account');
       }
-      //Success
+      
+      // Success
       setSuccess('Account created successfully! Redirecting to login...');
       console.log('User created:', data);
-      //Redirect to Signin
-      setTimeout (() => {
+      
+      // Redirect to Signin
+      setTimeout(() => {
         setShowSignin(true);
       }, 2000);
 
@@ -104,11 +115,11 @@ export default function SignUp() {
     console.log('Google sign in clicked');
   };
 
-
+  // Show Signin component if user clicks login
   if (showSignin) {
-   return <Signin onSignUpClick={() => setShowSignin(false)} />;
-  } 
- 
+    return <Signin onSignUpClick={() => setShowSignin(false)} />;
+  }
+
   return (
     <div className="signup-container">
       <div className="signup-card">
@@ -130,28 +141,14 @@ export default function SignUp() {
 
           {/* Error Message */}
           {error && (
-            <div style={{
-              padding: '12px',
-              marginBottom: '16px',
-              backgroundColor: '#fee',
-              border: '1px solid #fcc',
-              borderRadius: '4px',
-              color: '#c33'
-            }}>
+            <div className="error-message">
               {error}
             </div>
           )}
 
           {/* Success Message */}
           {success && (
-            <div style={{
-              padding: '12px',
-              marginBottom: '16px',
-              backgroundColor: '#efe',
-              border: '1px solid #cfc',
-              borderRadius: '4px',
-              color: '#3c3'
-            }}>
+            <div className="success-message">
               {success}
             </div>
           )}
@@ -165,6 +162,7 @@ export default function SignUp() {
                 value={formData.firstName}
                 onChange={handleChange}
                 className="form-input"
+                disabled={loading}
               />
             </div>
 
@@ -176,6 +174,7 @@ export default function SignUp() {
                 value={formData.lastName}
                 onChange={handleChange}
                 className="form-input"
+                disabled={loading}
               />
             </div>
 
@@ -187,6 +186,7 @@ export default function SignUp() {
                 value={formData.email}
                 onChange={handleChange}
                 className="form-input"
+                disabled={loading}
               />
             </div>
 
@@ -198,21 +198,23 @@ export default function SignUp() {
                 value={formData.password}
                 onChange={handleChange}
                 className="form-input"
+                disabled={loading}
               />
             </div>
 
-<<<<<<< HEAD
             <div className="input-group">
               <input
-                type="text"
+                type="tel"
                 name="phoneNumber"
                 placeholder="Phone Number"
                 value={formData.phoneNumber}
                 onChange={handleChange}
                 className="form-input"
+                disabled={loading}
               />
             </div>
-              <div className="input-group">
+
+            <div className="input-group">
               <input
                 type="text"
                 name="address"
@@ -220,23 +222,16 @@ export default function SignUp() {
                 value={formData.address}
                 onChange={handleChange}
                 className="form-input"
+                disabled={loading}
               />
             </div>
 
-            <button onClick={handleSubmit} className="submit-button">
-              GET STARTED
-=======
             <button 
               onClick={handleSubmit} 
               className="submit-button"
               disabled={loading}
-              style={{
-                opacity: loading ? 0.6 : 1,
-                cursor: loading ? 'not-allowed' : 'pointer'
-              }}
             >
               {loading ? 'CREATING ACCOUNT...' : 'GET STARTED'}
->>>>>>> f20869e11e705758f8190b40a74535a54eb3b821
             </button>
           </div>
 
@@ -249,7 +244,11 @@ export default function SignUp() {
             </div>
           </div>
 
-          <button onClick={handleGoogleSignIn} className="google-button">
+          <button 
+            onClick={handleGoogleSignIn} 
+            className="google-button"
+            disabled={loading}
+          >
             <svg className="google-icon" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
@@ -272,9 +271,16 @@ export default function SignUp() {
 
           <div className="login-link">
             Already have an account?{' '}
-            <button className="login-button" onClick={() => setShowSignin(true)} disabled={loading}>Login</button>
+            <button 
+              className="login-button" 
+              onClick={() => setShowSignin(true)} 
+              disabled={loading}
+            >
+              Login
+            </button>
           </div>
         </div>
       </div>
     </div>
   );
+}
