@@ -11,18 +11,93 @@ export default function SignUp() {
     phoneNumber:'',
     address:''
   });
+
   const [showSignin, setShowSignin] = useState(false);
+  const [loaidng, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+
+    if (error) setError('');
   };
 
-  const handleSubmit = () => {
-    console.log('Form submitted:', formData);
-    setShowSignin(true);
+  const validateForm = () => {
+    if (!formData.firstName.trim()) {
+      setError('First name is required');
+      return false;
+    }
+    if (!formData.lastName.trim()) {
+      setError('Last name is required');
+    }
+    if (!formData.email.trim()) {
+      setError('Email is required');
+    }
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address');
+      return false;
+    }
+    if (!formData.password) {
+      setError('Password is required');
+      return false;
+    }
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    //Validate form
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const response = await fetch('http://localhost:8000/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password
+        })
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        //Handle error
+        throw new Error(data.message || 'Failed to create account');
+      }
+      //Success
+      setSuccess('Account created successfully! Redirecting to login...');
+      console.log('User created:', data);
+      //Redirect to Signin
+      setTimeout (() => {
+        setShowSignin(true);
+      }, 2000);
+
+    } catch (err) {
+      setError(err.message || 'An error occurred. Please try again.');
+      console.error('Signup error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleSignIn = () => {
@@ -52,6 +127,34 @@ export default function SignUp() {
             <h1 className="form-title">Create Account</h1>
             <p className="form-subtitle">Enter Details below to create an account</p>
           </div>
+
+          {/* Error Message */}
+          {error && (
+            <div style={{
+              padding: '12px',
+              marginBottom: '16px',
+              backgroundColor: '#fee',
+              border: '1px solid #fcc',
+              borderRadius: '4px',
+              color: '#c33'
+            }}>
+              {error}
+            </div>
+          )}
+
+          {/* Success Message */}
+          {success && (
+            <div style={{
+              padding: '12px',
+              marginBottom: '16px',
+              backgroundColor: '#efe',
+              border: '1px solid #cfc',
+              borderRadius: '4px',
+              color: '#3c3'
+            }}>
+              {success}
+            </div>
+          )}
 
           <div className="form-inputs">
             <div className="input-group">
@@ -98,6 +201,7 @@ export default function SignUp() {
               />
             </div>
 
+<<<<<<< HEAD
             <div className="input-group">
               <input
                 type="text"
@@ -121,6 +225,18 @@ export default function SignUp() {
 
             <button onClick={handleSubmit} className="submit-button">
               GET STARTED
+=======
+            <button 
+              onClick={handleSubmit} 
+              className="submit-button"
+              disabled={loading}
+              style={{
+                opacity: loading ? 0.6 : 1,
+                cursor: loading ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {loading ? 'CREATING ACCOUNT...' : 'GET STARTED'}
+>>>>>>> f20869e11e705758f8190b40a74535a54eb3b821
             </button>
           </div>
 
@@ -156,10 +272,9 @@ export default function SignUp() {
 
           <div className="login-link">
             Already have an account?{' '}
-            <button className="login-button" onClick={() => setShowSignin(true)}>Login</button>
+            <button className="login-button" onClick={() => setShowSignin(true)} disabled={loading}>Login</button>
           </div>
         </div>
       </div>
     </div>
   );
-}
