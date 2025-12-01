@@ -7,7 +7,9 @@ export default function SignUp() {
     firstName: '',
     lastName: '',
     email: '',
-    password: ''
+    password: '',
+    phoneNumber:'',
+    address:''
   });
   const [showSignin, setShowSignin] = useState(false);
 
@@ -91,6 +93,27 @@ export default function SignUp() {
                 name="password"
                 placeholder="Password"
                 value={formData.password}
+                onChange={handleChange}
+                className="form-input"
+              />
+            </div>
+
+            <div className="input-group">
+              <input
+                type="text"
+                name="phoneNumber"
+                placeholder="Phone Number"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                className="form-input"
+              />
+            </div>
+              <div className="input-group">
+              <input
+                type="text"
+                name="address"
+                placeholder="Address"
+                value={formData.address}
                 onChange={handleChange}
                 className="form-input"
               />
