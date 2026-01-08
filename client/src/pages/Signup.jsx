@@ -13,7 +13,7 @@ export default function SignUp() {
   });
 
   const [showSignin, setShowSignin] = useState(false);
-  const [loaidng, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -33,13 +33,15 @@ export default function SignUp() {
     }
     if (!formData.lastName.trim()) {
       setError('Last name is required');
+      return false;
     }
     if (!formData.email.trim()) {
       setError('Email is required');
+      return false;
     }
-  }
+  
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       setError('Please enter a valid email address');
       return false;
@@ -269,3 +271,4 @@ export default function SignUp() {
       </div>
     </div>
   );
+}
