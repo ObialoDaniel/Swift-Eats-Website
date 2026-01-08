@@ -1,28 +1,110 @@
 import '../styles/auth.css';
 import signupImage from '../assets/signup.jpg';
 import React, { useState } from 'react';
+
 export default function SignIn({ onSignUpClick }) {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+    // Clear error when user starts typing
+    if (error) setError('');
   };
 
-  const handleSubmit = () => {
-    console.log('Form submitted:', formData);
+  const validateForm = () => {
+    if (!formData.email.trim()) {
+      setError('Email is required');
+      return false;
+    }
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address');
+      return false;
+    }
+    if (!formData.password) {
+      setError('Password is required');
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    // Validate form
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('http://localhost:8000/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle error response from server
+        if (response.status === 401) {
+          throw new Error('Invalid email or password');
+        } else if (response.status === 404) {
+          throw new Error('User not found');
+        } else {
+          throw new Error(data.message || 'Login failed');
+        }
+      }
+
+      // Success - Store user data/token
+      console.log('Login successful:', data);
+      
+      // Store authentication token (if your backend provides one)
+      if (data.token) {
+        localStorage.setItem('authToken', data.token);
+      }
+      
+      // Store user info (optional)
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
+      alert('Login successful! Redirecting to dashboard...');
+      
+    } catch (err) {
+      setError(err.message || 'An error occurred. Please try again.');
+      console.error('Login error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleSignIn = () => {
     console.log('Google sign in clicked');
+    // Implement Google OAuth logic here
   };
- 
- 
+
+  // Allow form submission with Enter key
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSubmit();
+    }
+  };
+
   return (
     <div className="signup-container">
       <div className="signup-card">
@@ -38,10 +120,25 @@ export default function SignIn({ onSignUpClick }) {
         {/* Right side - Form */}
         <div className="form-section">
           <div className="form-inputs">
-           <div className="form-header">
-                <h1 className="form-title">Login</h1>
-                <p className="form-subtitle">Enter Details below to Login</p>
-           </div>
+            <div className="form-header">
+              <h1 className="form-title">Login</h1>
+              <p className="form-subtitle">Enter Details below to Login</p>
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div style={{
+                padding: '12px',
+                marginBottom: '16px',
+                backgroundColor: '#fee',
+                border: '1px solid #fcc',
+                borderRadius: '4px',
+                color: '#c33'
+              }}>
+                {error}
+              </div>
+            )}
+
             <div className="input-group">
               <input
                 type="email"
@@ -49,7 +146,9 @@ export default function SignIn({ onSignUpClick }) {
                 placeholder="Email"
                 value={formData.email}
                 onChange={handleChange}
+                onKeyPress={handleKeyPress}
                 className="form-input"
+                disabled={loading}
               />
             </div>
 
@@ -60,12 +159,22 @@ export default function SignIn({ onSignUpClick }) {
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
+                onKeyPress={handleKeyPress}
                 className="form-input"
+                disabled={loading}
               />
             </div>
-            
-            <button onClick={handleSubmit} className="submit-button">
-              Login
+
+            <button 
+              onClick={handleSubmit} 
+              className="submit-button"
+              disabled={loading}
+              style={{
+                opacity: loading ? 0.6 : 1,
+                cursor: loading ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {loading ? 'LOGGING IN...' : 'LOGIN'}
             </button>
           </div>
 
@@ -78,7 +187,11 @@ export default function SignIn({ onSignUpClick }) {
             </div>
           </div>
 
-          <button onClick={handleGoogleSignIn} className="google-button">
+          <button 
+            onClick={handleGoogleSignIn} 
+            className="google-button"
+            disabled={loading}
+          >
             <svg className="google-icon" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
@@ -101,7 +214,13 @@ export default function SignIn({ onSignUpClick }) {
 
           <div className="login-link">
             Do not have an account?{' '}
-            <button className="login-button" onClick={onSignUpClick}>Sign up</button>
+            <button 
+              className="login-button" 
+              onClick={onSignUpClick}
+              disabled={loading}
+            >
+              Sign up
+            </button>
           </div>
         </div>
       </div>
